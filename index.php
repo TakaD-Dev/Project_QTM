@@ -2,26 +2,63 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Dự án QTM - Nhóm Hào</title>
-    <style>
-        body { font-family: Arial, sans-serif; text-align: center; background: #f4f4f4; padding: 50px; }
-        .container { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); display: inline-block; }
-        h1 { color: #2c3e50; }
-        .status { color: #27ae60; font-weight: bold; font-size: 20px; }
-        .info { margin-top: 20px; text-align: left; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QTM - Nhóm Hào | CI/CD Kubernetes</title>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    
+    <!-- Font Awesome (cho icon đẹp hơn) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
     <div class="container">
-        <h1>🚀 Triển khai CI/CD Thành Công</h1>
-        <p class="status">Hệ thống đang chạy trên Kubernetes (K3s)</p>
-        <hr>
-        <div class="info">
-            <p><strong>Dự án:</strong> Quản trị mạng & DevOps</p>
-            <p><strong>Công cụ:</strong> Jenkins, Docker, Kubernetes</p>
-            <p><strong>Trạng thái:</strong> Version 2.0 (No Database)</p>
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-rocket"></i>
+            </div>
+            <h1>Triển khai CI/CD Thành Công</h1>
+            <p class="subtitle">Dự án Quản trị mạng & DevOps - Nhóm Hào</p>
         </div>
-        <p><i>Chào mừng thầy và các bạn đã đến với bản demo!</i></p>
+
+        <div class="status-card">
+            <div class="status-icon success">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h2>Hệ thống đang chạy ổn định</h2>
+            <p class="status-text">Kubernetes (K3s) • Version 2.0</p>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-item">
+                <i class="fas fa-folder-open"></i>
+                <strong>Dự án</strong>
+                <span>Quản trị mạng & DevOps</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-tools"></i>
+                <strong>Công cụ</strong>
+                <span>Jenkins • Docker • Kubernetes</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-code-branch"></i>
+                <strong>Version</strong>
+                <span>2.0 (No Database)</span>
+            </div>
+            <div class="info-item">
+                <i class="fas fa-clock"></i>
+                <strong>Triển khai</strong>
+                <span id="deploy-time"></span>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><i class="fas fa-heart"></i> Chào mừng thầy và các bạn đến với bản demo!</p>
+            <small>Nhóm Hào - Lớp Quản trị mạng</small>
+        </div>
     </div>
+
+    <!-- JavaScript -->
+    <script src="js/script.js"></script>
 </body>
 </html>
