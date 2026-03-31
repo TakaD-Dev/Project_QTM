@@ -8,7 +8,9 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh 'kubectl apply -f deployment.yaml'
+                // Thêm đường dẫn đầy đủ của kubectl (thường là /usr/local/bin/kubectl)
+                sh '/usr/local/bin/kubectl apply -f deployment.yaml'
+                sh '/usr/local/bin/kubectl rollout restart deployment php-app'
             }
         }
     }
