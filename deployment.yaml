@@ -6,15 +6,16 @@ spec:
   replicas: 2
   selector:
     matchLabels:
-      app: php-app
+      app: php-web
   template:
     metadata:
       labels:
-        app: php-app
+        app: php-web
     spec:
       containers:
-      - name: php-app
-        image: php:7.4-apache # Hoặc image bạn đã build
+      - name: my-php-container
+        image: my-web-final:latest
+        imagePullPolicy: Never # Lấy image vừa build dưới máy chủ
         ports:
         - containerPort: 80
 ---
@@ -24,9 +25,9 @@ metadata:
   name: php-service
 spec:
   type: NodePort
-  selector:
-    app: php-app
   ports:
     - port: 80
       targetPort: 80
-      nodePort: 30001
+      nodePort: 30001 # Cổng truy cập từ bên ngoài
+  selector:
+    app: php-web
