@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Build & Package') {
             steps {
-                sh 'docker build -t my-web-final:latest .'
+                sh 'docker build --no-cache -t my-web-final:latest .'
             }
         }
         stage('Deploy') {
