@@ -3,58 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QTM - Nhóm Hào | CI/CD Kubernetes | deploy tự động </title>
-    
+    <title>QTM - CI/CD Pipeline Dashboard</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="logo">
-                <i class="fas fa-rocket"></i>
-            </div>
-            <h1>Triển khai CI/CD Thành Công</h1>
-            <p class="subtitle">Dự án Quản trị mạng & DevOps - Nhóm Hào</p>
-        </div>
+    <nav class="navbar">
+        <div class="nav-brand"><i class="fas fa-rocket"></i> QTM DevOps</div>
+        <div class="nav-status"><span class="dot green"></span> System Online</div>
+    </nav>
 
-        <div class="status-card">
-            <div class="status-icon">
-                <i class="fas fa-check-circle"></i>
-            </div>
-            <h2>Hệ thống đang chạy ổn định</h2>
-            <p class="status-text">Kubernetes (K3s) • Version 2.0</p>
-        </div>
+    <div class="hero">
+        <h1>CI/CD Pipeline <span class="highlight">Thành Công</span></h1>
+        <p>Triển khai tự động với Jenkins · Docker · Kubernetes (K3s)</p>
+    </div>
 
-        <div class="info-grid">
-            <div class="info-item">
-                <i class="fas fa-folder-open"></i>
-                <strong>Dự án</strong>
-                <span>Quản trị mạng & Dev</span>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-tools"></i>
-                <strong>Công cụ</strong>
-                <span>Jenkins • Docker • Kubernetes</span>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-code-branch"></i>
-                <strong>Version</strong>
-                <span>2.0 (No Database)</span>
-            </div>
-            <div class="info-item">
-                <i class="fas fa-clock"></i>
-                <strong>Triển khai lúc</strong>
-                <span id="deploy-time"></span>
-            </div>
+    <div class="cards">
+        <div class="card">
+            <i class="fab fa-jenkins"></i>
+            <h3>Jenkins</h3>
+            <p>Tự động build & deploy mỗi khi push code</p>
+            <span class="badge green">Active</span>
         </div>
-
-        <div class="footer">
-            <p><i class="fas fa-heart"></i> Chào mừng thầy và các bạn đến với bản demo!</p>
-            <small>Nhóm Hào © 2026</small>
+        <div class="card">
+            <i class="fab fa-docker"></i>
+            <h3>Docker</h3>
+            <p>Đóng gói ứng dụng thành container</p>
+            <span class="badge blue">Running</span>
+        </div>
+        <div class="card">
+            <i class="fas fa-dharmachakra"></i>
+            <h3>Kubernetes</h3>
+            <p>Orchestration với K3s · 2 Replicas</p>
+            <span class="badge purple">Healthy</span>
+        </div>
+        <div class="card">
+            <i class="fab fa-github"></i>
+            <h3>GitHub</h3>
+            <p>Source control · Branch: main</p>
+            <span class="badge gray">Synced</span>
         </div>
     </div>
 
+    <div class="footer">
+        <p>Nhóm Hào © 2026 · Quản trị mạng & DevOps</p>
+        <p id="deploy-time"></p>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>
