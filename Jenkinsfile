@@ -4,7 +4,7 @@ pipeline {
         stage('Build & Package') {
             steps {
                 sh 'docker build --no-cache -t my-web-final:latest .'
-                sh 'docker save my-web-final:latest | sudo k3s ctr images import -'
+                sh 'docker save my-web-final:latest | k3s ctr images import -'
             }
         }
         stage('Deploy') {
