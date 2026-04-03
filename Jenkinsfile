@@ -9,7 +9,7 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                sh 'kubectl apply -f deployment.yaml'
+                sh 'kubectl apply -f deployment.yaml --validate=false'
                 sh 'kubectl rollout restart deployment/php-app'
             }
         }
