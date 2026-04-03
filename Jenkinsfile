@@ -1,24 +1,60 @@
 pipeline {
     agent any
+    
+    environment {
+        IMAGE_NAME = "my-web-final"
+        TAR_FILE   = "/var/jenkins_home/${IMAGE_NAME}.tar"
+        K3S_IMAGES_DIR = "/var/lib/rancher/k3s/agent/images"
+    }
+    
     stages {
-        stage('Build & Package') {
+        stage('Declarative: Checkout SCM') {
             steps {
-                sh 'docker build --no-cache -t my-web-final:latest .'
-                sh 'docker save my-web-final:latest -o /var/jenkins_home/my-web-final.tar'
+                checkout scm
             }
         }
-stage('Deploy') {
-    steps {
-        // BƯỚC QUAN TRỌNG: Nạp image mới vào K3s
-        // Chúng ta dùng sudo để Jenkins có quyền gọi lệnh k3s trên máy Ubuntu
-        sh 'sudo k3s ctr images import /var/jenkins_home/my-web-final.tar'
         
-        // Cập nhật cấu hình
-        sh 'kubectl apply -f deployment.yaml --validate=false'
+        stage('Build & Package') {
+            steps {
+                sh '''
+                    echo "Building Docker image..."
+                    docker build --no-cache -t ${IMAGE_NAME}:latest .
+                    
+                    echo "Saving image to tar file..."
+                    docker save ${IMAGE_NAME}:latest -o ${TAR_FILE}
+                '''
+            }
+        }
         
-        // Ép K3s chạy Pod mới với Image vừa nạp
-        sh 'kubectl rollout restart deployment/php-app'
+        stage('Deploy to k3s') {
+            steps {
+                sh '''
+                    echo "Copying image tar to k3s images directory..."
+                    
+                    # Tạo thư mục nếu chưa có
+                    mkdir -p ${K3S_IMAGES_DIR}
+                    
+                    # Copy file tar vào
+                    cp ${TAR_FILE} ${K3S_IMAGES_DIR}/
+                    
+                    echo "Đã copy image vào ${K3S_IMAGES_DIR}/"
+                    echo "K3s sẽ tự động import image sau vài giây."
+                    
+                    # Kiểm tra (có thể cần chờ một chút)
+                    sleep 5
+                    ls -l ${K3S_IMAGES_DIR}/
+                '''
+            }
+        }
     }
-}
+    
+    post {
+        always {
+            sh 'rm -f ${TAR_FILE}'   // Xóa file tar tạm
+        }
+        success {
+            echo "✅ Pipeline thành công! Image đã được đưa vào k3s."
+            echo "Bạn có thể kiểm tra bằng lệnh: k3s ctr -n k8s.io images ls | grep my-web-final"
+        }
     }
 }
