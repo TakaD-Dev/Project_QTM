@@ -4,11 +4,10 @@ pipeline {
     environment {
         IMAGE_NAME = "my-web-final"
         TAR_FILE   = "/var/jenkins_home/${IMAGE_NAME}.tar"
-        K3S_IMAGES_DIR = "/var/lib/rancher/k3s/agent/images"
     }
     
     stages {
-        stage('Declarative: Checkout SCM') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
@@ -17,11 +16,13 @@ pipeline {
         stage('Build & Package') {
             steps {
                 sh '''
-                    echo "Building Docker image..."
+                    echo "🔨 Đang build Docker image..."
                     docker build --no-cache -t ${IMAGE_NAME}:latest .
                     
-                    echo "Saving image to tar file..."
+                    echo "💾 Đang lưu image thành file tar..."
                     docker save ${IMAGE_NAME}:latest -o ${TAR_FILE}
+                    
+                    echo "✅ Build và save hoàn tất."
                 '''
             }
         }
@@ -29,20 +30,16 @@ pipeline {
         stage('Deploy to k3s') {
             steps {
                 sh '''
-                    echo "Copying image tar to k3s images directory..."
+                    echo "🚀 Đang import image vào k3s..."
                     
-                    # Tạo thư mục nếu chưa có
-                    mkdir -p ${K3S_IMAGES_DIR}
+                    # Dùng sudo vì bạn đã cấu hình sudoers trong Dockerfile
+                    sudo k3s ctr -n k8s.io images import ${TAR_FILE}
                     
-                    # Copy file tar vào
-                    cp ${TAR_FILE} ${K3S_IMAGES_DIR}/
+                    echo "✅ Import image thành công!"
                     
-                    echo "Đã copy image vào ${K3S_IMAGES_DIR}/"
-                    echo "K3s sẽ tự động import image sau vài giây."
-                    
-                    # Kiểm tra (có thể cần chờ một chút)
-                    sleep 5
-                    ls -l ${K3S_IMAGES_DIR}/
+                    # Kiểm tra image đã có trong k3s chưa
+                    echo "Danh sách image:"
+                    sudo k3s ctr -n k8s.io images ls | grep ${IMAGE_NAME} || echo "⚠️ Không tìm thấy image trong k3s!"
                 '''
             }
         }
@@ -50,11 +47,16 @@ pipeline {
     
     post {
         always {
-            sh 'rm -f ${TAR_FILE}'   // Xóa file tar tạm
+            sh '''
+                echo "🧹 Dọn dẹp file tar..."
+                rm -f ${TAR_FILE}
+            '''
         }
         success {
-            echo "✅ Pipeline thành công! Image đã được đưa vào k3s."
-            echo "Bạn có thể kiểm tra bằng lệnh: k3s ctr -n k8s.io images ls | grep my-web-final"
+            echo "🎉 Pipeline thành công! Image đã được import vào k3s."
+        }
+        failure {
+            echo "❌ Pipeline thất bại. Vui lòng kiểm tra log."
         }
     }
 }
