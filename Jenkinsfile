@@ -1,53 +1,61 @@
 pipeline {
     agent any
-    
+
     environment {
         APP_IMAGE = "my-web-final"
+        // Sử dụng biến môi trường để đường dẫn luôn đồng nhất
         TAR_FILE  = "/var/jenkins_home/${APP_IMAGE}.tar"
+        CONTAINERD_SOCK = "/run/k3s/containerd/containerd.sock"
     }
-    
+
     stages {
-        stage('Checkout') {
+        stage('🚚 Checkout') {
             steps {
+                // Tải code từ GitHub
                 checkout scm
             }
         }
-        
-        stage('Build & Package') {
+
+        stage('🏗️ Build & Package') {
             steps {
-                sh '''
-                    echo "🔨 Đang build Docker image cho ứng dụng..."
+                sh """
+                    echo "🔨 Đang build Docker image: ${APP_IMAGE}..."
                     docker build --no-cache -t ${APP_IMAGE}:latest .
                     
-                    echo "💾 Đang lưu image thành file tar..."
+                    echo "💾 Đang đóng gói image thành file .tar..."
                     docker save ${APP_IMAGE}:latest -o ${TAR_FILE}
                     
-                    echo "✅ Build hoàn tất."
-                '''
+                    echo "✅ Build và đóng gói thành công."
+                """
             }
         }
-        
-        stage('Deploy to k3s') {
-    steps {
-        echo '🚀 Đang import image vào k3s...'
-        // Bỏ sudo đi vì Jenkins đã có quyền qua chmod 666
-   sh 'k3s ctr --address /run/k3s/containerd/containerd.sock -n k8s.io images import /var/jenkins_home/my-web-final.tar'
-        echo '☸️ Đang cập nhật ứng dụng trên Kubernetes...'
-        sh 'kubectl apply -f deployment.yaml'
-        sh 'kubectl rollout restart deployment my-web-deployment'
+
+        stage('🚀 Deploy to K3s') {
+            steps {
+                sh """
+                    echo "📦 Đang import image vào K3s (containerd)..."
+                    # Sử dụng biến socket và bỏ sudo như đã thống nhất
+                    k3s ctr --address ${CONTAINERD_SOCK} -n k8s.io images import ${TAR_FILE}
+                    
+                    echo "☸️ Đang cập nhật ứng dụng trên Kubernetes..."
+                    kubectl apply -f deployment.yaml
+                    kubectl rollout restart deployment my-web-deployment
+                """
+            }
+        }
     }
-}
-    }
-    
+
     post {
         always {
-            sh 'rm -f ${TAR_FILE} || true'
+            echo "🧹 Đang dọn dẹp file tạm..."
+            // Xóa file tar sau khi xong để tiết kiệm dung lượng ổ cứng
+            sh "rm -f ${TAR_FILE} || true"
         }
         success {
-            echo "🎉 Pipeline HOÀN THÀNH! Image my-web-final đã được import vào k3s."
+            echo "🎉 CHÚC MỪNG! Pipeline đã chạy thành công rực rỡ."
         }
         failure {
-            echo "❌ Pipeline thất bại. Kiểm tra log phía trên."
+            echo "❌ LỖI: Pipeline thất bại. Bạn hãy kiểm tra lại quyền truy cập socket (chmod 666) nhé."
         }
     }
 }
