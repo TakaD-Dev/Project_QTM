@@ -31,8 +31,7 @@ pipeline {
     steps {
         echo '🚀 Đang import image vào k3s...'
         // Bỏ sudo đi vì Jenkins đã có quyền qua chmod 666
-        sh 'k3s ctr --address /run/k3s/containerd/containerd.sock -n k8s.io images import /var/jenkins_home/my-web-final.tar'
-        
+   sh 'k3s ctr --address /run/k3s/containerd/containerd.sock -n k8s.io images import /var/jenkins_home/my-web-final.tar'
         echo '☸️ Đang cập nhật ứng dụng trên Kubernetes...'
         sh 'kubectl apply -f deployment.yaml'
         sh 'kubectl rollout restart deployment my-web-deployment'
