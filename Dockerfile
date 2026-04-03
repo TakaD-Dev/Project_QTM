@@ -1,10 +1,8 @@
-FROM php:7.4-apache
+FROM jenkins/jenkins:lts-jdk17
 
-# Copy tất cả file vào container
-COPY . /var/www/html/
+USER root
+RUN apt-get update && apt-get install -y sudo && rm -rf /var/lib/apt/lists/*
+RUN echo "jenkins ALL=(ALL) NOPASSWD: /usr/local/bin/k3s" >> /etc/sudoers.d/jenkins
+RUN chmod 0440 /etc/sudoers.d/jenkins
 
-# Đặt quyền cho apache (www-data)
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 755 /var/www/html
-
-EXPOSE 80
+USER jenkins
