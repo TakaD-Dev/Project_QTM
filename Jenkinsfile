@@ -28,21 +28,16 @@ pipeline {
         }
         
         stage('Deploy to k3s') {
-            steps {
-                sh '''
-                    echo "🚀 Đang import image vào k3s..."
-                    
-                    # Sử dụng socket đầy đủ của k3s + sudo
-                    sudo k3s ctr --address /run/k3s/containerd/containerd.sock -n k8s.io images import ${TAR_FILE}
-                    
-                    echo "✅ Import image thành công!"
-                    
-                    # Kiểm tra image đã có trong k3s chưa
-                    echo "📋 Kiểm tra image:"
-                    sudo k3s ctr --address /run/k3s/containerd/containerd.sock -n k8s.io images ls | grep ${APP_IMAGE} || echo "⚠️ Chưa thấy image (có thể cần chờ vài giây)"
-                '''
-            }
-        }
+    steps {
+        echo '🚀 Đang import image vào k3s...'
+        // Bỏ sudo đi vì Jenkins đã có quyền qua chmod 666
+        sh 'k3s ctr --address /run/k3s/containerd/containerd.sock -n k8s.io images import /var/jenkins_home/my-web-final.tar'
+        
+        echo '☸️ Đang cập nhật ứng dụng trên Kubernetes...'
+        sh 'kubectl apply -f deployment.yaml'
+        sh 'kubectl rollout restart deployment my-web-deployment'
+    }
+}
     }
     
     post {
